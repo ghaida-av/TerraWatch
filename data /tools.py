@@ -1,7 +1,6 @@
-"""LangChain tool wrappers with the SAME names/signatures the notebook's planner already uses
+"""LangChain tool wrappers with the SAME names the notebook's planner already uses
 (geocode, geo_adapter, weather_adapter, air_quality_adapter, fire_adapter, earthquake_adapter).
 
-Swap in for Person 1's notebook:
 
     from data.tools import TOOLS, TOOLS_BY_NAME
 
@@ -18,14 +17,14 @@ from data.registry import ADAPTERS, GEOCODER
 
 @tool
 def geocode(city: str, country_or_continent: str = "") -> dict:
-    """Resolve a city name to latitude/longitude and IANA timezone."""
+    """Resolve a city name  and IANA timezone."""
     return GEOCODER.fetch(city, country_or_continent).for_llm()
 
 
 @tool
 def geo_adapter(lat: float, lon: float, tz_name: str = "UTC", radius_m: int = 5000,
                 categories: str = "populated_place") -> dict:
-    """Find nearby geographic features / infrastructure around a point (OpenStreetMap-derived).
+    """Find nearby geographic features.
     `categories` is a Geoapify category list or a preset: population | critical_infrastructure | industrial."""
     return ADAPTERS["geo"].fetch(lat, lon, radius_m=radius_m, categories=categories).for_llm()
 
