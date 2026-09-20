@@ -1,10 +1,9 @@
-"""Single entry point for the agent / backend.
+"""Single entry point for the  backend.
 
     from data import collect_evidence
     evidence = collect_evidence(30.0444, 31.2357, sources=["weather", "air_quality", "fire"])
 
-Sources run in parallel (all I/O bound). One failing source never blocks the others — its
-Evidence just has status="error".
+Sources run in parallel .
 """
 from __future__ import annotations
 
