@@ -1,4 +1,4 @@
-"""The synthetic incident must be physically consistent, or Person 3 will tune against nonsense."""
+
 from datetime import datetime, timezone
 
 from data.core import mock_scenario as ms
