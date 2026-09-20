@@ -1,8 +1,4 @@
-"""Each adapter's live path, fed with responses shaped like the real APIs' documented formats.
 
-NOTE: these prove our parsing/normalization logic. They do not prove the upstream APIs still
-return these shapes — run scripts/live_smoke_test.py with real keys for that.
-"""
 from datetime import timedelta
 
 import pytest
