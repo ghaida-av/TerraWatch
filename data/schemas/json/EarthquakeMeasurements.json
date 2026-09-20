@@ -1,0 +1,180 @@
+{
+  "$defs": {
+    "QuakeEvent": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "magnitude": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Magnitude"
+        },
+        "place": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Place"
+        },
+        "time": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time"
+        },
+        "lat": {
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "title": "Lon",
+          "type": "number"
+        },
+        "depth_km": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Depth Km"
+        },
+        "distance_km": {
+          "title": "Distance Km",
+          "type": "number"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "alert": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Alert"
+        },
+        "tsunami": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tsunami"
+        }
+      },
+      "required": [
+        "id",
+        "lat",
+        "lon",
+        "distance_km"
+      ],
+      "title": "QuakeEvent",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "event_count": {
+      "title": "Event Count",
+      "type": "integer"
+    },
+    "radius_km": {
+      "title": "Radius Km",
+      "type": "number"
+    },
+    "window_days": {
+      "title": "Window Days",
+      "type": "integer"
+    },
+    "min_magnitude": {
+      "title": "Min Magnitude",
+      "type": "number"
+    },
+    "max_magnitude": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Magnitude"
+    },
+    "nearest_km": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Nearest Km"
+    },
+    "strongest": {
+      "items": {
+        "$ref": "#/$defs/QuakeEvent"
+      },
+      "title": "Strongest",
+      "type": "array"
+    },
+    "closest": {
+      "items": {
+        "$ref": "#/$defs/QuakeEvent"
+      },
+      "title": "Closest",
+      "type": "array"
+    }
+  },
+  "required": [
+    "event_count",
+    "radius_km",
+    "window_days",
+    "min_magnitude"
+  ],
+  "title": "EarthquakeMeasurements",
+  "type": "object"
+}

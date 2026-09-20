@@ -1,0 +1,81 @@
+{
+  "$defs": {
+    "Place": {
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "categories": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Categories",
+          "type": "array"
+        },
+        "lat": {
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "title": "Lon",
+          "type": "number"
+        },
+        "distance_km": {
+          "title": "Distance Km",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon",
+        "distance_km"
+      ],
+      "title": "Place",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "feature_count": {
+      "title": "Feature Count",
+      "type": "integer"
+    },
+    "radius_m": {
+      "title": "Radius M",
+      "type": "integer"
+    },
+    "categories_requested": {
+      "title": "Categories Requested",
+      "type": "string"
+    },
+    "by_category": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "By Category",
+      "type": "object"
+    },
+    "nearest": {
+      "items": {
+        "$ref": "#/$defs/Place"
+      },
+      "title": "Nearest",
+      "type": "array"
+    }
+  },
+  "required": [
+    "feature_count",
+    "radius_m",
+    "categories_requested"
+  ],
+  "title": "GeoMeasurements",
+  "type": "object"
+}

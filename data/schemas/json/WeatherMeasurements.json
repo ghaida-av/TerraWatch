@@ -1,0 +1,133 @@
+{
+  "$defs": {
+    "WeatherPoint": {
+      "properties": {
+        "time": {
+          "title": "Time",
+          "type": "string"
+        },
+        "temperature_c": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature C"
+        },
+        "relative_humidity_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Relative Humidity Pct"
+        },
+        "wind_speed_kmh": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wind Speed Kmh"
+        },
+        "wind_direction_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wind Direction Deg"
+        },
+        "wind_gusts_kmh": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wind Gusts Kmh"
+        },
+        "precipitation_mm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Precipitation Mm"
+        }
+      },
+      "required": [
+        "time"
+      ],
+      "title": "WeatherPoint",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "current": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/WeatherPoint"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "window_start": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Window Start"
+    },
+    "window_end": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Window End"
+    },
+    "hourly_count": {
+      "default": 0,
+      "title": "Hourly Count",
+      "type": "integer"
+    }
+  },
+  "title": "WeatherMeasurements",
+  "type": "object"
+}

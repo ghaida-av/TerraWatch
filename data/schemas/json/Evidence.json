@@ -1,0 +1,199 @@
+{
+  "$defs": {
+    "ErrorInfo": {
+      "properties": {
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "retryable": {
+          "default": false,
+          "title": "Retryable",
+          "type": "boolean"
+        },
+        "http_status": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Http Status"
+        }
+      },
+      "required": [
+        "type",
+        "message"
+      ],
+      "title": "ErrorInfo",
+      "type": "object"
+    },
+    "GeoPoint": {
+      "properties": {
+        "lat": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Lon",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "title": "GeoPoint",
+      "type": "object"
+    }
+  },
+  "description": "The single envelope every adapter returns.",
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "evidence_id": {
+      "title": "Evidence Id",
+      "type": "string"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "weather",
+        "air_quality",
+        "fire",
+        "earthquake",
+        "geo",
+        "geocode"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "no_data",
+        "error"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "data_mode": {
+      "enum": [
+        "live",
+        "cache",
+        "stale_cache",
+        "demo",
+        "mock"
+      ],
+      "title": "Data Mode",
+      "type": "string"
+    },
+    "timestamp": {
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "fetched_at": {
+      "title": "Fetched At",
+      "type": "string"
+    },
+    "location": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/GeoPoint"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "query": {
+      "additionalProperties": true,
+      "title": "Query",
+      "type": "object"
+    },
+    "measurements": {
+      "additionalProperties": true,
+      "title": "Measurements",
+      "type": "object"
+    },
+    "units": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Units",
+      "type": "object"
+    },
+    "observations": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Observations",
+      "type": "array"
+    },
+    "raw_reference": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Raw Reference"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ErrorInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "is_modeled": {
+      "default": false,
+      "title": "Is Modeled",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "evidence_id",
+    "source",
+    "kind",
+    "status",
+    "data_mode",
+    "timestamp",
+    "fetched_at"
+  ],
+  "title": "Evidence",
+  "type": "object"
+}

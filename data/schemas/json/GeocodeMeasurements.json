@@ -1,0 +1,47 @@
+{
+  "properties": {
+    "matched_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Matched Name"
+    },
+    "tz_name": {
+      "default": "UTC",
+      "title": "Tz Name",
+      "type": "string"
+    },
+    "country": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Country"
+    },
+    "country_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Country Code"
+    }
+  },
+  "title": "GeocodeMeasurements",
+  "type": "object"
+}

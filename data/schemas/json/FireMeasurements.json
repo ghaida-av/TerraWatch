@@ -1,0 +1,195 @@
+{
+  "$defs": {
+    "FireHotspot": {
+      "properties": {
+        "lat": {
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "title": "Lon",
+          "type": "number"
+        },
+        "distance_km": {
+          "title": "Distance Km",
+          "type": "number"
+        },
+        "bearing_fire_to_location_deg": {
+          "title": "Bearing Fire To Location Deg",
+          "type": "number"
+        },
+        "detected_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detected At"
+        },
+        "frp_mw": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Frp Mw"
+        },
+        "brightness_k": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Brightness K"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "daynight": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Daynight"
+        },
+        "satellite": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Satellite"
+        }
+      },
+      "required": [
+        "lat",
+        "lon",
+        "distance_km",
+        "bearing_fire_to_location_deg"
+      ],
+      "title": "FireHotspot",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "hotspot_count": {
+      "title": "Hotspot Count",
+      "type": "integer"
+    },
+    "radius_km": {
+      "title": "Radius Km",
+      "type": "number"
+    },
+    "window_days": {
+      "title": "Window Days",
+      "type": "integer"
+    },
+    "product": {
+      "title": "Product",
+      "type": "string"
+    },
+    "nearest_km": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Nearest Km"
+    },
+    "total_frp_mw": {
+      "default": 0.0,
+      "title": "Total Frp Mw",
+      "type": "number"
+    },
+    "max_frp_mw": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Frp Mw"
+    },
+    "high_confidence_count": {
+      "default": 0,
+      "title": "High Confidence Count",
+      "type": "integer"
+    },
+    "earliest_detection": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Earliest Detection"
+    },
+    "latest_detection": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Latest Detection"
+    },
+    "closest_fires": {
+      "items": {
+        "$ref": "#/$defs/FireHotspot"
+      },
+      "title": "Closest Fires",
+      "type": "array"
+    }
+  },
+  "required": [
+    "hotspot_count",
+    "radius_km",
+    "window_days",
+    "product"
+  ],
+  "title": "FireMeasurements",
+  "type": "object"
+}
