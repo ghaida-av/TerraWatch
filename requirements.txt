@@ -1,0 +1,5 @@
+requests>=2.31
+pydantic>=2.5
+diskcache>=5.6          # optional: persistent cache (falls back to in-memory)
+langchain-core>=0.3     # optional: only for data/tools.py (agent tool wrappers)
+pytest>=8               # dev
