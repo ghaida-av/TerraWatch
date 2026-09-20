@@ -1,9 +1,8 @@
-"""In-process evidence store (bounded LRU).
+"""
 
-Why: the LLM should see compact `measurements`, but the analysis engine needs every row
+The LLM should see compact `measurements`, but the analysis engine needs every row
 (`observations`). Tools return the compact view + `evidence_id`; analysis calls
-`get_evidence(evidence_id)` to get the full object. IDs are content hashes, so sharing across
-concurrent investigations is harmless.
+`get_evidence(evidence_id)` to get the full object. 
 """
 from __future__ import annotations
 
