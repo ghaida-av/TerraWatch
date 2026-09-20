@@ -1,11 +1,11 @@
-"""Hit the REAL APIs once and report what came back.  Run this with your keys BEFORE trusting the adapters.
+""" REAL APIs  and report what came back. 
 
     export OPENAQ_API_KEY=... FIRMS_MAP_KEY=... GEOAPIFY_API_KEY=...
     python -m scripts.live_check                    # check Cairo, no files written
     python -m scripts.live_check --record           # also record demo fixtures for Cairo, LA and Tokyo
     python -m scripts.live_check --place tokyo
 
-Exit code is non-zero if any source errored, so it can gate a CI job or a pre-demo checklist.
+
 """
 from __future__ import annotations
 
