@@ -1,4 +1,4 @@
-"""Write JSON Schemas of the normalized model so backend (Person 4) and frontend (Person 5) can
+""" JSON Schemas of the normalized model : backend  and frontend  can
 generate types:   python -m scripts.export_schemas   ->  data/schemas/json/*.json"""
 import json
 import sys
