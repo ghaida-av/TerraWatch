@@ -13,6 +13,13 @@ Drop the `data/` folder (and `scripts/`, `tests/`) into the monorepo root (plan 
 pip install -r requirements.txt
 python -m pytest                                  
 
+# explain geographic and risk calculations with sample defaults
+python -m geo_analysis.show_geo_numbers
+# enter all values interactively in the terminal
+python -m geo_analysis.show_geo_numbers --interactive
+# or override individual values for scripts and repeatable checks
+python -m geo_analysis.show_geo_numbers --lat1 0 --lon1 0 --lat2 0 --lon2 1 --wind-direction 90
+
 # no keys, no network :
 TERRAWATCH_MODE=mock python -c "from data import collect_evidence; print(collect_evidence(30.0444, 31.2357)[2].for_llm())"
 
