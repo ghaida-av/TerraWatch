@@ -72,18 +72,6 @@ Open **[http://localhost:8000/docs](http://localhost:8000/docs)** for interactiv
 
 ---
 
-## Packages & Ownership
-
-| Package | Role | Core Deliverables | Entry Points |
-|---|---|---|---|
-| `data/` | P2: Data Layer | 5 source adapters, normalized `Evidence`, TTL cache, mock/demo fixtures | `from data import collect_evidence, geocode, get_evidence` |
-| `geo_analysis/` | P3: Geo Analysis | Haversine distance, wind vectors, PM2.5 baseline anomalies, evidence graph | `from geo_analysis import analyze_evidence` |
-| `agent/` | P1: Agent Lead | Multi-source investigation planner, grounded reasoner, CLI dashboard | `from agent import investigate` |
-| `apps/api/` | P4: Backend | FastAPI service, SQLite persistence, REST endpoints, CORS | `apps.api.main:app` |
-| `apps/web/` | P5: Frontend | Web investigation console, map layers, graph visualizer | *(Next up)* |
-
----
-
 ## API Endpoints (`apps/api`)
 
 All endpoints are prefixed with `/api` and support CORS for frontend integration:
