@@ -3,3 +3,6 @@ pydantic>=2.5
 diskcache>=5.6          # optional: persistent cache (falls back to in-memory)
 langchain-core>=0.3     # optional: only for data/tools.py (agent tool wrappers)
 pytest>=8               # dev
+fastapi>=0.110.0        # backend API
+uvicorn[standard]>=0.28.0 # ASGI server
+

@@ -51,8 +51,9 @@ Final Structured Investigation Report
 | **P1: Agent** | 🟢 Complete (Vertical Slice) | Fully extracted from notebook to `agent/` package (`investigate()`, models, CLI with terminal formatting and `--json` export). |
 | **P2: Data Layer** | 🟢 Complete (95%) | Production-ready: 5 adapters, cache with stale fallback, mock/demo/live modes, typed schemas. |
 | **P3: Geo/Analysis** | 🟢 Complete (95%) | Spatial, wind vectors, temporal delta, risk scoring, evidence graph, and `analyze_evidence` pipeline bridge now fully operational. |
-| **P4: Backend** | 🔴 0% | Next up: minimal FastAPI endpoint (`POST /investigations`) wrapping `agent.investigate`. |
+| **P4: Backend** | 🟢 Complete | FastAPI REST server in `apps/api/` with SQLite persistence, evidence drill-down, CORS, and full test suite. |
 | **P5: Frontend** | 🔴 0% | Next up: Web investigation UI with map and evidence graph. |
+
 | **P6: Product / QA** | 🟡 50% | 55 unit/integration tests passing (0.20s), mock scenario and live checks available. |
 
 ---
@@ -137,10 +138,31 @@ TERRAWATCH_MODE=mock .venv/bin/python -m agent "Cairo" --json | jq .
 - **Test Status**:
   - `55 passed in 0.20s` (across `test_agent`, `test_pipeline`, `test_reliability`, `test_risk`, `test_live_parsing`, `test_mock_scenario`, `test_show_geo_numbers`, `test_spatial`, `test_temporal`, `test_wind`).
 
+### Entry 3 — 2026-09-29 | Person 4: FastAPI Backend & SQLite Storage
+- **Agent**: Antigravity Assistant
+- **Status**: Backend fully built, tested, and running. 60 unit/integration tests passing (0.38s).
+- **Actions Taken**:
+  1. **Dependencies**:
+     - Added `fastapi>=0.110.0` and `uvicorn[standard]>=0.28.0` to `requirements.txt`.
+     - Installed into `.venv` via `uv pip`.
+  2. **Backend API (`apps/api`)**:
+     - Created `apps/api/config.py`: CORS configuration, database paths, and mode flags.
+     - Created `apps/api/models.py`: `CreateInvestigationRequest`, `InvestigationSummary`, `InvestigationListResponse`, `HealthResponse`.
+     - Created `apps/api/storage.py`: SQLite document persistence for investigation records and metadata querying.
+     - Created `apps/api/routes/health.py`: `GET /api/health` and `GET /api/sources`.
+     - Created `apps/api/routes/investigations.py`: `POST /api/investigations` (executes `agent.investigate`, persists, returns report), `GET /api/investigations` (paginated list), `GET /api/investigations/{id}`, `GET /api/investigations/{id}/graph`.
+     - Created `apps/api/routes/evidence.py`: `GET /api/evidence/{id}` (drills down into full raw evidence observations via `data.store`).
+     - Created `apps/api/main.py`: App factory with lifespan DB initialization and CORS middleware.
+  3. **Verification**:
+     - Created comprehensive test suite in `tests/test_api.py`.
+     - Tested live uvicorn server with curl for `health`, `POST /investigations`, `GET /investigations`, and `GET /evidence/{id}`.
+- **Test Status**:
+  - `60 passed in 0.38s` across all 11 test suites.
+
 ---
 
 ## 7. Next Up (Roadmap)
 
-1. **Person 4 (Backend)**: Build minimal FastAPI endpoint in `apps/api/` exposing `POST /investigations` calling `agent.investigate()`.
-2. **Person 5 (Frontend)**: Build web console in `apps/web/` with Leaflet map, risk badge cards, and evidence graph viewer.
-3. **Person 6 (QA & Evals)**: Build automated evaluation suite across 10 controlled scenarios.
+1. **Person 5 (Frontend)**: Build web console in `apps/web/` connecting to `http://localhost:8000/api` with Leaflet map, risk badge cards, and Cytoscape/React Flow evidence graph viewer.
+2. **Person 6 (QA & Evals)**: Build automated evaluation suite across 10 controlled scenarios.
+
