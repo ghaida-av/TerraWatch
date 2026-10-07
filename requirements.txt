@@ -5,4 +5,7 @@ langchain-core>=0.3     # optional: only for data/tools.py (agent tool wrappers)
 pytest>=8               # dev
 fastapi>=0.110.0        # backend API
 uvicorn[standard]>=0.28.0 # ASGI server
+sqlalchemy[asyncio]>=2.0.0 # SQL toolkit and ORM with async
+aiosqlite>=0.20.0          # async SQLite driver for SQLAlchemy
+greenlet>=3.0.0            # coroutine support for SQLAlchemy asyncio
 

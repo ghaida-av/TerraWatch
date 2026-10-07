@@ -80,7 +80,8 @@ All endpoints are prefixed with `/api` and support CORS for frontend integration
 |---|---|---|---|
 | `GET` | `/api/health` | System health, telemetry, and runtime mode | `{"status": "ok", "mode": "mock", ...}` |
 | `GET` | `/api/sources` | Metadata & live readiness for all 5 adapters | `{"total_sources": 5, "sources": [...]}` |
-| `POST` | `/api/investigations` | Run full investigation, persist to DB, return report | `{"investigation_id": "inv_...", ...}` |
+| `POST` | `/api/investigations` | Run full investigation asynchronously, persist to DB via SQLAlchemy, return report | `{"investigation_id": "inv_...", ...}` |
+| `GET` | `/api/investigations/stream` | **SSE Stream**: Real-time event stream of investigation progress stages | `event: stage\ndata: {"stage": "geocoding", ...}\n\n` |
 | `GET` | `/api/investigations` | Paginated history of investigations | `{"total": 12, "items": [...]}` |
 | `GET` | `/api/investigations/{id}` | Full investigation report by ID | Complete `InvestigationReport` |
 | `GET` | `/api/investigations/{id}/graph` | Evidence graph nodes and relationships | `{"nodes": [...], "relationships": [...]}` |
@@ -97,7 +98,38 @@ curl -X POST http://localhost:8000/api/investigations \
   }'
 ```
 
+### Real-Time SSE Streaming Example:
+```bash
+# Listen to live progression events (geocoding -> evidence collection -> geo analysis -> reasoning -> completed)
+curl -N "http://localhost:8000/api/investigations/stream?location=Cairo"
+```
+
 ---
+
+## Storage & Database Layer
+
+TerraWatch features a flexible persistence architecture in `apps/api/storage.py`:
+- **SQLAlchemy 2.0 ORM & Async Engine**: Uses `AsyncSession` with `aiosqlite` for asynchronous non-blocking queries and background tasks.
+- **Native SQLite Engine**: Preserves complete backward compatibility for synchronous workflows, scripts, and legacy tests.
+
+---
+
+## Docker Deployment
+
+Build and run the production container locally:
+
+```bash
+# 1. Build Docker image
+docker build -t terrawatch:latest .
+
+# 2. Run container
+docker run -d --name terrawatch -p 8000:8000 \
+  -e TERRAWATCH_MODE=mock \
+  terrawatch:latest
+
+# 3. Check container logs & health
+curl http://localhost:8000/api/health
+```
 
 ## Data Sources & Adapters
 

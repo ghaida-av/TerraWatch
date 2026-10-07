@@ -12,6 +12,14 @@ class Settings:
     DB_PATH: str = os.getenv("TERRAWATCH_DB_PATH", "terrawatch.db")
     MODE: str = os.getenv("TERRAWATCH_MODE", "live")
 
+    @property
+    def sync_database_url(self) -> str:
+        return f"sqlite:///{self.DB_PATH}"
+
+    @property
+    def async_database_url(self) -> str:
+        return f"sqlite+aiosqlite:///{self.DB_PATH}"
+
     # Person 5 web console origins
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000",

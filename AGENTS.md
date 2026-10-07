@@ -157,12 +157,33 @@ TERRAWATCH_MODE=mock .venv/bin/python -m agent "Cairo" --json | jq .
      - Created comprehensive test suite in `tests/test_api.py`.
      - Tested live uvicorn server with curl for `health`, `POST /investigations`, `GET /investigations`, and `GET /evidence/{id}`.
 - **Test Status**:
-  - `60 passed in 0.38s` across all 11 test suites.
+### Entry 4 — 2026-10-08 | SQLAlchemy 2.0, Async Storage, SSE Streaming & Dockerfile
+- **Agent**: Antigravity Assistant
+- **Status**: Complete. 62 unit/integration tests passing (0.56s).
+- **Actions Taken**:
+  1. **File Renaming**:
+     - Renamed `AGENT.md` to `AGENTS.md` per guidelines.
+  2. **Storage Modernization (Dual SQLite + SQLAlchemy)**:
+     - Updated `apps/api/storage.py` to support SQLAlchemy 2.0 ORM (`InvestigationRecord`) with `AsyncSession` and `create_async_engine` via `sqlite+aiosqlite`.
+     - Preserved original native `sqlite3` storage functions (`init_db`, `save_investigation`, `get_investigation`, `list_investigations`, `clear_investigations`) for seamless backward compatibility.
+     - Added async equivalents: `init_db_async`, `save_investigation_async`, `get_investigation_async`, `list_investigations_async`, `clear_investigations_async`.
+  3. **Async Support & SSE Streaming**:
+     - Updated `apps/api/routes/investigations.py` endpoints to `async def` leveraging async storage methods.
+     - Added `investigate_stream()` in `agent/investigator.py` yielding sequential progress events (`geocoding`, `geocoded`, `collecting_evidence`, `evidence_collected`, `geo_analysis`, `analysis_computed`, `reasoning`, `completed`).
+     - Added `GET /api/investigations/stream` SSE streaming endpoint returning `text/event-stream` chunks and automatically persisting the resulting report.
+  4. **Containerization**:
+     - Created production `Dockerfile` (Python 3.12 slim, non-blocking uvicorn runner, healthcheck).
+     - Added `.dockerignore` ignoring virtualenv, databases, git, and caches.
+  5. **Documentation & Tests**:
+     - Updated `README.md` with SSE endpoint specs, curl streaming examples, storage architecture, and Docker commands.
+     - Added SSE and dual-engine coexistence test cases to `tests/test_api.py`.
+- **Test Status**:
+  - `62 passed in 0.56s` across all test suites.
 
 ---
 
 ## 7. Next Up (Roadmap)
 
-1. **Person 5 (Frontend)**: Build web console in `apps/web/` connecting to `http://localhost:8000/api` with Leaflet map, risk badge cards, and Cytoscape/React Flow evidence graph viewer.
+1. **Person 5 (Frontend)**: Build web console in `apps/web/` connecting to `http://localhost:8000/api` with Leaflet map, risk badge cards, Cytoscape/React Flow evidence graph viewer, and EventSource client listening to `/api/investigations/stream`.
 2. **Person 6 (QA & Evals)**: Build automated evaluation suite across 10 controlled scenarios.
 

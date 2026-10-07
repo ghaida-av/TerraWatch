@@ -124,3 +124,71 @@ def test_404_handling(client):
     res_ev = client.get("/api/evidence/ev_doesnotexist")
     assert res_ev.status_code == 404
     assert "not found" in res_ev.json()["detail"].lower()
+
+
+def test_stream_investigation_endpoint(client):
+    """Test SSE streaming endpoint yields stage events and persists report."""
+    with client.stream(
+        "GET",
+        "/api/investigations/stream",
+        params={"location": "Alexandria", "sources": ["weather", "fire"]},
+    ) as response:
+        assert response.status_code == 200
+        assert "text/event-stream" in response.headers.get("content-type", "")
+
+        events = []
+        for line in response.iter_lines():
+            if line.startswith("data: "):
+                data_str = line[len("data: "):]
+                events.append(data_str)
+
+        assert len(events) >= 4  # geocoding, geocoded, collecting_evidence, geo_analysis, completed
+        assert any('"geocoding"' in e for e in events)
+        assert any('"completed"' in e for e in events)
+
+    # Verify report was persisted in database by stream completion
+    list_res = client.get("/api/investigations")
+    assert list_res.status_code == 200
+    list_data = list_res.json()
+    assert any("Alexandria" in item["target_name"] for item in list_data["items"])
+
+
+def test_sqlite_and_sqlalchemy_coexistence():
+    """Verify raw SQLite functions and SQLAlchemy async storage coexist seamlessly."""
+    import asyncio
+    from apps.api.config import settings
+    from apps.api.storage import (
+        clear_investigations,
+        get_investigation,
+        get_investigation_async,
+        list_investigations,
+        list_investigations_async,
+        save_investigation,
+        save_investigation_async,
+    )
+    from agent.investigator import investigate
+
+    # 1. Run investigation and save via native SQLite function
+    report1 = investigate("Giza", sources=["weather"])
+    save_investigation(report1)
+
+    # Read back via raw SQLite
+    sync_read = get_investigation(report1.investigation_id)
+    assert sync_read is not None
+    assert sync_read.investigation_id == report1.investigation_id
+
+    # Read back via SQLAlchemy async
+    async_read = asyncio.run(get_investigation_async(report1.investigation_id))
+    assert async_read is not None
+    assert async_read.investigation_id == report1.investigation_id
+
+    # 2. Save another via SQLAlchemy async and read via raw SQLite
+    report2 = investigate("Luxor", sources=["weather"])
+    asyncio.run(save_investigation_async(report2))
+
+    sync_list = list_investigations()
+    assert sync_list.total >= 2
+    assert any(item.target_name == report2.target.name for item in sync_list.items)
+
+    async_list = asyncio.run(list_investigations_async())
+    assert async_list.total == sync_list.total

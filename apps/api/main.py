@@ -11,14 +11,14 @@ from apps.api.config import settings
 from apps.api.routes.evidence import router as evidence_router
 from apps.api.routes.health import router as health_router
 from apps.api.routes.investigations import router as investigations_router
-from apps.api.storage import init_db
+from apps.api.storage import init_db, init_db_async
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan context for startup and shutdown events."""
-    # Ensure SQLite tables exist
-    init_db()
+    # Ensure database schema exists (SQLAlchemy async + SQLite tables)
+    await init_db_async()
     yield
 
 
