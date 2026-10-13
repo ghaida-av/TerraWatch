@@ -187,3 +187,10 @@ TERRAWATCH_MODE=mock .venv/bin/python -m agent "Cairo" --json | jq .
 1. **Person 5 (Frontend)**: Build web console in `apps/web/` connecting to `http://localhost:8000/api` with Leaflet map, risk badge cards, Cytoscape/React Flow evidence graph viewer, and EventSource client listening to `/api/investigations/stream`.
 2. **Person 6 (QA & Evals)**: Build automated evaluation suite across 10 controlled scenarios.
 
+
+
+### 2026-10-13 — Repo restructure + new frontend
+- Moved all Python code into `backend/` (no import changes; run commands from `backend/`).
+- Removed old `apps/web` (static HTML). New React frontend lives in `frontend/`.
+- Added `GET /api/monitor/events` (`data/adapters/usgs/global_feed.py`, `apps/api/routes/monitor.py`) for the Earth Monitor map.
+- Tests: 63 passing.

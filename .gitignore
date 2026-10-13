@@ -12,3 +12,6 @@ htmlcov/
 .DS_Store
 .terrawatch_cache/
 *.db
+node_modules/
+dist/
+.env

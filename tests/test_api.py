@@ -192,3 +192,58 @@ def test_sqlite_and_sqlalchemy_coexistence():
 
     async_list = asyncio.run(list_investigations_async())
     assert async_list.total == sync_list.total
+
+
+def test_monitor_events_mock(client):
+    r = client.get("/api/monitor/events?window=day&min_mag=3")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["total"] == len(body["events"]) > 0
+    assert body["mode"] == "mock"
+    assert body["source_status"] == "ok"
+    assert all(e["id"].startswith("mock") for e in body["events"])
+    assert all(e["magnitude"] >= 3 for e in body["events"])
+    assert set(body["summary"]["levels"]) == {"LOW", "MODERATE", "HIGH", "CRITICAL"}
+
+
+def test_monitor_live_feed_failure_is_not_replaced_with_mock(client, monkeypatch):
+    from data.adapters.usgs import global_feed
+    from data.core.errors import AdapterError, ErrorType
+
+    monkeypatch.setenv("TERRAWATCH_MODE", "live")
+    global_feed._cache.clear()
+
+    def fail_live_feed(window, min_mag):
+        raise AdapterError(ErrorType.NETWORK, "USGS is unreachable")
+
+    monkeypatch.setattr(global_feed, "_live_events", fail_live_feed)
+    response = client.get("/api/monitor/events?window=day&min_mag=2.5")
+
+    assert response.status_code == 502
+    assert response.json()["detail"] == "Live USGS earthquake feed unavailable: USGS is unreachable"
+
+
+def test_monitor_live_feed_returns_upstream_events(client, monkeypatch):
+    from data.adapters.usgs import global_feed
+
+    monkeypatch.setenv("TERRAWATCH_MODE", "live")
+    global_feed._cache.clear()
+    upstream_event = {
+        "id": "us7000test",
+        "magnitude": 4.2,
+        "place": "10 km north of Test City",
+        "time": "2026-10-13T12:00:00Z",
+        "lat": 12.0,
+        "lon": 34.0,
+        "depth_km": 8.0,
+        "level": "MODERATE",
+        "url": "https://earthquake.usgs.gov/test",
+    }
+    monkeypatch.setattr(global_feed, "_live_events", lambda window, min_mag: [upstream_event])
+
+    response = client.get("/api/monitor/events?window=day&min_mag=2.5")
+    body = response.json()
+
+    assert response.status_code == 200
+    assert body["mode"] == "live"
+    assert body["events"] == [upstream_event]

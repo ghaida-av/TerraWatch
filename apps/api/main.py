@@ -11,6 +11,7 @@ from apps.api.config import settings
 from apps.api.routes.evidence import router as evidence_router
 from apps.api.routes.health import router as health_router
 from apps.api.routes.investigations import router as investigations_router
+from apps.api.routes.monitor import router as monitor_router
 from apps.api.storage import init_db, init_db_async
 
 
@@ -47,6 +48,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router, prefix="/api")
     app.include_router(investigations_router, prefix="/api")
     app.include_router(evidence_router, prefix="/api")
+    app.include_router(monitor_router, prefix="/api")
 
     # Convenience root health redirect / endpoint
     @app.get("/", tags=["Root"])
