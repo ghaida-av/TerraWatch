@@ -119,8 +119,12 @@ def analyze_evidence(
                 or calculate_bearing(primary_fire["lat"], primary_fire["lon"], lat, lon)
             )
             proximity = fire_proximity_score(fire_distance_km, max_distance_km=150.0)
-            alignment = wind_alignment(bearing_fire_to_target, wind_dir_from_deg)
-            downwind = is_downwind(bearing_fire_to_target, wind_dir_from_deg, tolerance_deg=35.0)
+            # Weather APIs report the direction the wind blows FROM (meteorological convention), but smoke
+            # travels TO the opposite side. Compare the fire->target bearing with the direction of travel,
+            # otherwise upwind and downwind are swapped.
+            wind_to_deg = (wind_dir_from_deg + 180.0) % 360.0
+            alignment = wind_alignment(bearing_fire_to_target, wind_to_deg)
+            downwind = is_downwind(bearing_fire_to_target, wind_to_deg, tolerance_deg=35.0)
 
     # 4. Air Quality & Anomaly Processing
     aq_ev = by_kind.get("air_quality")

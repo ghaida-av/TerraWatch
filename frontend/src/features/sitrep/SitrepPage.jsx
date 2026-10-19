@@ -2,6 +2,13 @@ import { Badge, Empty, PageHeader, Panel, Stat } from '../../shared/components/u
 import { useInvestigation } from '../../store/InvestigationContext';
 import { num, pct } from '../../core/utils/format';
 
+// In other words: where the written summary came from, so readers know how far to trust it.
+const SOURCE = {
+  llm: ['AI-written · every number verified against computed evidence', 'border-cyan-400/40 bg-cyan-400/10 text-cyan-200'],
+  deterministic: ['Generated directly from computed metrics (no AI text)', 'border-white/15 bg-white/5 text-slate-300'],
+  deterministic_fallback: ['AI draft rejected by guardrails · showing the verified metric summary', 'border-amber-400/40 bg-amber-400/10 text-amber-200'],
+};
+
 export default function SitrepPage() {
   const { d } = useInvestigation();
   if (!d.r) return <><PageHeader kicker="REPORT CENTER" stage="06" title="Situation Report" /><Empty /></>;
@@ -13,6 +20,13 @@ export default function SitrepPage() {
       <Panel title="Conclusion" right={<Badge level={r.risk_level} />}>
         <h2 className="text-lg font-semibold text-white">{r.risk_level} ENVIRONMENTAL RISK (SCORE {num(r.risk_score, 2)})</h2>
         <p className="mt-2 text-sm leading-relaxed text-slate-300">{r.executive_summary}</p>
+        {(() => { const [label, cls] = SOURCE[r.summary_source || 'deterministic'] || SOURCE.deterministic;
+          return <span className={`mt-3 inline-block rounded border px-2 py-1 font-mono text-[10px] tracking-wide ${cls}`}>{label}</span>; })()}
+        {r.data_gaps?.length > 0 && (
+          <div role="alert" className="mt-3 rounded border border-amber-400/40 bg-amber-400/10 p-2 font-mono text-[11px] text-amber-200">
+            Incomplete data: {r.data_gaps.map((g) => g.replace(':', ' → ')).join(', ')}. Missing data is not the same as safe conditions.
+          </div>
+        )}
       </Panel>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Panel title="Key findings"><ul className="list-disc space-y-1.5 pl-5 text-sm text-slate-300">{r.key_findings.map((f, i) => <li key={i}>{f}</li>)}</ul></Panel>

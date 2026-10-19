@@ -87,6 +87,9 @@ def investigate(
         executive_summary=synthesis["executive_summary"],
         evidence_graph=analysis["evidence_graph"],
         evidence_citations=analysis["evidence_ids_used"],
+        summary_source=synthesis["summary_source"],
+        guardrail_notes=synthesis["guardrail_notes"],
+        data_gaps=synthesis["data_gaps"],
     )
 
 
@@ -233,6 +236,9 @@ async def investigate_stream(
         executive_summary=synthesis["executive_summary"],
         evidence_graph=analysis["evidence_graph"],
         evidence_citations=analysis["evidence_ids_used"],
+        summary_source=synthesis["summary_source"],
+        guardrail_notes=synthesis["guardrail_notes"],
+        data_gaps=synthesis["data_gaps"],
     )
 
     # Stage 5: Completed

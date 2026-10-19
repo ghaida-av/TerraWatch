@@ -34,3 +34,7 @@ class InvestigationReport(BaseModel):
     executive_summary: str
     evidence_graph: Dict[str, Any]
     evidence_citations: List[str]
+    # Provenance of the narrative: "deterministic" | "llm" | "deterministic_fallback" (LLM output was rejected).
+    summary_source: str = "deterministic"
+    guardrail_notes: List[str] = Field(default_factory=list)
+    data_gaps: List[str] = Field(default_factory=list)  # e.g. ["fire:error", "air_quality:no_data"]
