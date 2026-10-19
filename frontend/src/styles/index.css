@@ -35,26 +35,6 @@ body { @apply bg-void text-slate-200 font-sans antialiased; margin: 0;
 .leaflet-control-attribution a { color: #94a3b8 !important; }
 
 /* Full-screen seismic monitor styling. */
-.monitor-topbar {
-  padding: 12px 18px;
-  background: linear-gradient(180deg, rgba(3, 8, 12, .94), rgba(3, 8, 12, .62) 72%, transparent);
-}
-.monitor-topbar > div:first-child { gap: 9px; }
-.monitor-topbar > div:first-child > div {
-  width: 34px;
-  height: 34px;
-  border-radius: 5px;
-  border-color: rgba(34, 211, 238, .5);
-  background: rgba(4, 17, 25, .78);
-}
-.monitor-topbar > div:first-child > span:first-of-type { font-size: 14px; letter-spacing: .16em; }
-.monitor-topbar > div:first-child > span:last-of-type { font-size: 9px; }
-.monitor-topbar nav { gap: 6px; }
-.monitor-topbar nav a,
-.monitor-topbar > div:last-child > a { padding: 7px 10px; border-radius: 4px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; }
-.monitor-topbar .btn-solid { padding: 8px 11px; border-radius: 4px; font-size: 11px; }
-.monitor-topbar > div:last-child > span { width: 30px; height: 30px; border-radius: 4px; }
-
 .monitor-page .leaflet-tile-pane { filter: brightness(.49) saturate(.78) contrast(1.2) hue-rotate(5deg); }
 .monitor-map-label {
   padding: 8px 11px;
@@ -65,7 +45,6 @@ body { @apply bg-void text-slate-200 font-sans antialiased; margin: 0;
 }
 .monitor-live-dot { box-shadow: 0 0 10px rgba(52, 211, 153, .85); background-color: #34d399 !important; }
 .monitor-rail {
-  width: min(370px, 33vw);
   padding: 15px;
   border: 1px solid rgba(81, 157, 185, .35);
   border-radius: 3px;
@@ -74,7 +53,6 @@ body { @apply bg-void text-slate-200 font-sans antialiased; margin: 0;
   scrollbar-color: #264754 #081017;
   scrollbar-width: thin;
 }
-.monitor-rail { top: 64px; }
 .monitor-online { display: inline-flex; align-items: center; gap: 6px; color: #8fe4c2; }
 .monitor-feed-not-live { color: #fbbf24; }
 .monitor-event-list { max-height: min(38vh, 340px); }
@@ -91,15 +69,16 @@ body { @apply bg-void text-slate-200 font-sans antialiased; margin: 0;
 .monitor-country-name { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 @media (max-width: 760px) {
-  .monitor-topbar { padding: 9px 10px; }
-  .monitor-topbar nav { display: none; }
-  .monitor-topbar > div:first-child > span:last-of-type { display: none; }
-  .monitor-topbar .btn-solid { font-size: 0; padding: 8px; }
-  .monitor-topbar .btn-solid::after { content: '✻'; font-size: 14px; }
-  .monitor-topbar > div:last-child > span { display: none; }
   .monitor-rail { top: auto; bottom: 54px; left: 8px; right: 8px; width: auto; max-height: 48vh; padding: 12px; }
   .monitor-event-list { max-height: 18vh; }
   .monitor-map-label { top: 3.6rem; left: 8px; font-size: 9px; }
   .monitor-status { left: 8px !important; right: 8px !important; bottom: 8px !important; padding: 8px 10px; font-size: 9px; }
   .monitor-zoom { left: 50%; transform: translateX(-50%); }
+}
+
+/* ---- Accessibility ---- */
+:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; border-radius: 4px; }
+.leaflet-container:focus-visible { outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }

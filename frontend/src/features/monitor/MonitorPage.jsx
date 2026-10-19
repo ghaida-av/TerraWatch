@@ -37,7 +37,7 @@ export default function MonitorPage() {
       </div>
 
       {/* right floating panel */}
-      <aside className="monitor-rail glass absolute bottom-20 right-4 top-16 z-[600] w-[23.5rem] overflow-y-auto p-5">
+      <aside aria-label="Earthquake details" className="monitor-rail glass absolute bottom-20 right-4 top-16 z-[600] w-[min(23.5rem,33vw)] overflow-y-auto p-5">
         <div className="monitor-rail-toolbar flex items-center justify-between gap-2 border-b border-white/10 pb-3 font-mono text-[10px] uppercase tracking-wider text-slate-400">
           <span><span className="text-amber-300">⌂</span> Earth Monitor <span className="px-1 text-slate-600">|</span> {feedLabel}</span>
           <a className={`monitor-online ${liveFeed ? '' : 'monitor-feed-not-live'}`} href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson" target="_blank" rel="noreferrer"><span className={`h-1.5 w-1.5 rounded-full ${liveFeed ? 'bg-emerald-400' : 'bg-amber-400'}`} /> USGS SOURCE ↗</a>
@@ -54,13 +54,13 @@ export default function MonitorPage() {
 
         <div className="mt-5 flex items-baseline justify-between"><h3 className="text-[12px] uppercase tracking-[0.18em] text-slate-300">Latest earthquakes</h3><span className="text-lg font-semibold text-white">{events.length} <span className="text-xs font-normal text-slate-400">SIGNALS</span></span></div>
         <div className="mt-3 flex flex-wrap gap-2">
-          {FILTERS.map(([l, v]) => <button key={l} onClick={() => setMin(v)} className={`rounded-md border px-3 py-1 font-mono text-xs ${min === v ? 'border-white/50 bg-white/15 text-white' : 'border-white/15 text-slate-400'}`}>{l}</button>)}
-          <span className="ml-auto flex gap-1">{['hour', 'day', 'week'].map((w) => <button key={w} onClick={() => setWin(w)} className={`rounded-md px-2 py-1 font-mono text-[10px] uppercase ${win === w ? 'bg-cyan-400/20 text-cyan-300' : 'text-slate-500'}`}>{w}</button>)}</span>
+          {FILTERS.map(([l, v]) => <button key={l} aria-pressed={min === v} onClick={() => setMin(v)} className={`rounded-md border px-3 py-1 font-mono text-xs ${min === v ? 'border-white/50 bg-white/15 text-white' : 'border-white/15 text-slate-400'}`}>{l}</button>)}
+          <span className="ml-auto flex gap-1">{['hour', 'day', 'week'].map((w) => <button key={w} aria-pressed={win === w} aria-label={`Show last ${w}`} onClick={() => setWin(w)} className={`rounded-md px-2 py-1 font-mono text-[10px] uppercase ${win === w ? 'bg-cyan-400/20 text-cyan-300' : 'text-slate-500'}`}>{w}</button>)}</span>
         </div>
         <ul className="monitor-event-list mt-2 max-h-40 divide-y divide-white/10 overflow-y-auto">
           {events.map((e) => { const [label, col] = STATUS[e.level]; return (
             <li key={e.id}><button onClick={() => { setSel(e); setNonce((n) => n + 1); }} className={`monitor-event monitor-event--${(e.level || 'low').toLowerCase()} flex w-full items-center gap-3 py-2.5 text-left hover:bg-white/5 ${sel?.id === e.id ? 'bg-white/5' : ''}`}>
-              <span className={`h-3.5 w-3.5 shrink-0 rounded-full border-2 ${RING_BORDER[e.level]}`} />
+              <span aria-hidden="true" className={`h-3.5 w-3.5 shrink-0 rounded-full border-2 ${RING_BORDER[e.level]}`} />
               <span className="min-w-0 flex-1"><span className="block truncate text-[13px] text-slate-100">{e.place}</span><span className="text-[10px] uppercase tracking-wider text-slate-500">{ago(e.time)}</span></span>
               <span className="flex shrink-0 flex-col items-end gap-1"><span className={`text-right font-mono text-[10px] ${col}`}>{label}</span><CountryFlag lat={e.lat} lon={e.lon} /></span>
             </button></li>); })}

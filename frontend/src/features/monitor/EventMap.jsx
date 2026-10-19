@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { CircleMarker, MapContainer, TileLayer, useMap } from 'react-leaflet';
 
 // Ring colours follow the design: green = nominal, yellow/orange = alert, red = critical.
@@ -16,9 +16,9 @@ function ZoomPad({ home }) {
   const b = 'grid h-10 w-10 place-items-center text-lg text-slate-200 hover:bg-white/10';
   return (
     <div className="monitor-zoom absolute bottom-24 left-1/2 z-[1000] flex -translate-x-1/2 overflow-hidden rounded-xl border border-white/15 bg-[#0a1020]/90 backdrop-blur" onDoubleClick={(e) => e.stopPropagation()}>
-      <button className={b} onClick={() => map.zoomIn()}>+</button>
-      <button className={`${b} border-x border-white/10`} onClick={() => map.zoomOut()}>−</button>
-      <button className={b} onClick={() => map.flyTo(home, 4)}>◎</button>
+      <button type="button" aria-label="Zoom in" className={b} onClick={() => map.zoomIn()}>+</button>
+      <button type="button" aria-label="Zoom out" className={`${b} border-x border-white/10`} onClick={() => map.zoomOut()}>−</button>
+      <button type="button" aria-label="Reset map view" className={b} onClick={() => map.flyTo(home, 4)}>◎</button>
     </div>
   );
 }
@@ -32,11 +32,11 @@ export default function EventMap({ events, selected, nonce, onSelect }) {
       {events.map((e) => {
         const c = RING[e.level] || '#fff', r = 6 + (e.magnitude || 0) * 2.4, on = selected?.id === e.id, click = { click: () => onSelect?.(e) };
         return (
-          <span key={e.id}>
+          <Fragment key={e.id}>
             <CircleMarker center={[e.lat, e.lon]} radius={r + 7} pathOptions={{ color: c, weight: on ? 3 : 2, opacity: on ? 1 : 0.85, fillOpacity: 0 }} eventHandlers={click} />
             <CircleMarker center={[e.lat, e.lon]} radius={r} pathOptions={{ color: c, weight: 2.5, fillColor: '#050810', fillOpacity: 0.55 }} eventHandlers={click} />
             <CircleMarker center={[e.lat, e.lon]} radius={2.5} pathOptions={{ color: c, weight: 1, fillColor: c, fillOpacity: 1 }} eventHandlers={click} />
-          </span>
+          </Fragment>
         );
       })}
       <Fly target={selected} nonce={nonce} />

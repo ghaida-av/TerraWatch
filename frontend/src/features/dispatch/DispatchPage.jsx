@@ -37,7 +37,7 @@ export default function DispatchPage() {
     <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_21rem]">
       <div className="space-y-5">
         <div className="pt-2">
-          <div className="flex items-center gap-3 font-mono text-[11px] tracking-wider text-slate-300"><span className="h-2 w-2 rounded-full bg-violet-400" />PLANETARY SEISMIC NETWORK <span className="text-slate-500">| NGS:84</span></div>
+          <div className="flex items-center gap-3 font-mono text-[11px] tracking-wider text-slate-300"><span className="h-2 w-2 rounded-full bg-violet-400" />PLANETARY SEISMIC NETWORK <span className="text-slate-500">| WGS 84</span></div>
           <div className="mt-2 flex items-center gap-2 font-mono text-[11px] tracking-wider text-cyan-300"><span className="h-2 w-2 rounded-full bg-cyan-400" />STAGE 01 ·</div>
           <h1 className="mt-1 text-4xl font-bold text-white">Autonomous Investigation Launchpad</h1>
           <p className="mt-1 max-w-xl text-[15px] text-slate-400">Initiate multi-vector environmental crisis inquiries across heterogeneous telemetry feeds.</p>
@@ -52,18 +52,18 @@ export default function DispatchPage() {
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-[1fr_15rem]">
             <div className="rounded-xl border border-white/15 bg-black/20 p-4">
               <div className="font-mono text-[11px] tracking-wider text-slate-400">&gt; INQUIRY DIRECTIVE</div>
-              <textarea className="mt-2 h-24 w-full resize-none bg-transparent font-mono text-[17px] leading-snug text-white outline-none" value={form.question} onChange={(e) => set({ question: e.target.value })} />
+              <textarea aria-label="Inquiry directive" className="mt-2 h-24 w-full resize-none bg-transparent font-mono text-[17px] leading-snug text-white outline-none" value={form.question} onChange={(e) => set({ question: e.target.value })} />
             </div>
             <div className="rounded-xl border border-white/15 bg-black/20 p-3">
               <div className="font-mono text-[11px] tracking-wider text-slate-300">TELEMETRY ANOMALIES</div>
               <ProgressionChart data={series} height={100} axis />
-              <div className="flex justify-between font-mono text-[9px] text-slate-500"><span>24h ago</span><span>now</span></div>
+              <div className="flex justify-between font-mono text-[10px] text-slate-500"><span>24h ago</span><span>now</span></div>
             </div>
           </div>
           <div className="mt-3 flex items-center justify-between font-mono text-[11px] tracking-wider text-slate-400"><span><span className="text-cyan-300">QUERY LENGTH:</span> {form.question.length} Characters</span><span>| DUAL-HYPOTHESIS HAZARD DETECTION</span></div>
 
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <button onClick={run} disabled={S.running || S.offline} className="inline-flex items-center gap-3 rounded-lg border border-cyan-300/60 bg-cyan-400/15 px-6 py-3 font-mono text-sm tracking-wider text-cyan-100 shadow-[0_0_24px_rgba(34,211,238,0.25)] transition hover:bg-cyan-400/25 disabled:opacity-40">{S.running ? 'INVESTIGATION RUNNING…' : 'START INVESTIGATION'} <span className="text-lg">✻</span></button>
+            <button onClick={run} disabled={S.running || S.offline || !form.location.trim()} title={!form.location.trim() ? 'Enter a target location first' : undefined} className="inline-flex items-center gap-3 rounded-lg border border-cyan-300/60 bg-cyan-400/15 px-6 py-3 font-mono text-sm tracking-wider text-cyan-100 shadow-[0_0_24px_rgba(34,211,238,0.25)] transition hover:bg-cyan-400/25 disabled:opacity-40">{S.running ? 'INVESTIGATION RUNNING…' : 'START INVESTIGATION'} <span className="text-lg">✻</span></button>
             <div className="flex overflow-hidden rounded-lg border border-white/15 font-mono text-[11px]">
               {Object.entries(TIERS).map(([k, t]) => <button key={k} title={t.sources.map((s) => SRC_LABEL[s]).join(' · ')} onClick={() => set({ tier: +k })} className={`px-3 py-2 ${form.tier === +k ? 'bg-cyan-400/20 text-cyan-200' : 'text-slate-400 hover:bg-white/5'}`}>TIER {k} · {t.label.toUpperCase()}</button>)}
             </div>
@@ -75,12 +75,12 @@ export default function DispatchPage() {
 
         <section className="card p-5">
           <div className="flex items-center justify-between"><h3 className="font-mono text-[12px] tracking-[0.18em] text-cyan-300">GEOSPATIAL TARGET &amp; TELEMETRY</h3><span className={`font-mono text-[11px] ${S.health ? 'text-emerald-400' : 'text-red-400'}`}>RADAR LOCK: {S.health ? 'ACTIVE' : 'OFFLINE'}</span></div>
-          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Stat label="Centroid latitude" value={lat$(d.target?.lat)} /><Stat label="Centroid longitude" value={lon$(d.target?.lon)} /><Stat label="Urban footprint" value="N/A" /><Stat label="Density index" value="N/A" />
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <Stat label="Centroid latitude" value={lat$(d.target?.lat)} /><Stat label="Centroid longitude" value={lon$(d.target?.lon)} />
           </div>
           <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-[2fr_1fr]">
-            <div><label className="label">Target location</label><input className="input mt-1" value={form.location} onChange={(e) => set({ location: e.target.value })} /></div>
-            <div><label className="label">Country hint (optional)</label><input className="input mt-1" value={form.country} onChange={(e) => set({ country: e.target.value })} /></div>
+            <div><label htmlFor="target-location" className="label">Target location</label><input id="target-location" required aria-invalid={!form.location.trim()} className="input mt-1" value={form.location} onChange={(e) => set({ location: e.target.value })} /></div>
+            <div><label htmlFor="country-hint" className="label">Country hint (optional)</label><input id="country-hint" className="input mt-1" value={form.country} onChange={(e) => set({ country: e.target.value })} /></div>
           </div>
         </section>
       </div>

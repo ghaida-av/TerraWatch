@@ -5,8 +5,8 @@ import { API_BASE } from '../config';
 export const api = {
   health: () => request('/health'),
   sources: () => request('/sources'),
-  globalEvents: ({ window = 'day', minMag = 2.5, limit = 150 } = {}) =>
-    request(`/monitor/events?window=${window}&min_mag=${minMag}&limit=${limit}`),
+  globalEvents: ({ window = 'day', minMag = 2.5, limit = 150 } = {}, signal) =>
+    request(`/monitor/events?window=${window}&min_mag=${minMag}&limit=${limit}`, { signal }),
   listInvestigations: (limit = 20, offset = 0) => request(`/investigations?limit=${limit}&offset=${offset}`),
   getInvestigation: (id) => request(`/investigations/${id}`),
   getGraph: (id) => request(`/investigations/${id}/graph`),

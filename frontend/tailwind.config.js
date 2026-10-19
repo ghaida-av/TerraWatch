@@ -10,6 +10,7 @@ export default {
         line: '#1b2a42',      // borders
         accent: '#22d3ee',    // cyan (primary)
         violet: { 400: '#a78bfa', 500: '#8b5cf6' },
+        slate: { 500: '#8696ad' }, // lighter than default so small grey labels pass contrast on the dark background
       },
       fontFamily: {
         sans: ['"Space Grotesk"', 'Inter', 'system-ui', 'sans-serif'],

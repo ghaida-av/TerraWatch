@@ -4,7 +4,7 @@ import { useInvestigation } from '../../store/InvestigationContext';
 import { useGlobalEvents } from '../../features/monitor/useGlobalEvents';
 import { levelStyle } from '../../core/utils/risk';
 
-export default function Sidebar() {
+export default function Sidebar({ open = false, docked = true, overlay = false, onClose }) {
   const { S, d } = useInvestigation();
   const { data } = useGlobalEvents({ window: 'day', minMag: 2.5 });
   const alerts = data ? data.summary.levels.HIGH + data.summary.levels.CRITICAL : 0;
@@ -18,22 +18,21 @@ export default function Sidebar() {
     return [n.sub, 'text-slate-500'];
   };
   const right = (n) => {
-    if (n.path === '/monitor' && data) return <span className="text-right"><span className="flex items-center justify-end gap-1.5 font-mono text-base text-emerald-400"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />{data.total}</span><span className="block text-[9px] tracking-widest text-slate-500">LIVE EVENTS</span></span>;
+    if (n.path === '/monitor' && data) return <span className="text-right"><span className="flex items-center justify-end gap-1.5 font-mono text-base text-emerald-400"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />{data.total}</span><span className="block text-[10px] tracking-widest text-slate-500">LIVE EVENTS</span></span>;
     if (n.path === '/hud') return <span className={`h-2.5 w-2.5 rounded-full ${S.running ? 'animate-pulse bg-cyan-400' : 'bg-slate-500'}`} />;
-    if (n.path === '/risk') return <span className="grid h-5 w-5 place-items-center rounded border border-slate-600 text-xs text-slate-400">−</span>;
     if (n.tag) return <span className="font-mono text-[10px] tracking-wider text-cyan-300/80">{n.tag}</span>;
     return null;
   };
 
   return (
-    <aside className="glass !bg-[#0a1020]/95 absolute bottom-4 left-4 top-4 z-30 flex w-[19rem] flex-col overflow-hidden">
+    <aside id="app-sidebar" aria-label="Navigation" className={`glass !bg-[#0a1020]/95 absolute bottom-4 left-4 top-4 flex w-[19rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden transition-transform duration-200 motion-reduce:transition-none ${overlay ? 'z-[1200]' : 'z-30'} ${open ? 'translate-x-0' : 'pointer-events-none -translate-x-[115%]'} ${docked ? 'lg:pointer-events-auto lg:translate-x-0' : ''}`} {...(!open && !docked ? { inert: '' } : {})}>
       <div className={`flex items-center gap-2 border-b border-white/10 px-4 py-2.5 font-mono text-[11px] tracking-wider ${S.offline ? 'bg-red-500/10 text-red-300' : 'bg-emerald-500/10 text-emerald-300'}`}>
         <span>((•))</span><span>NETWORK STATUS:</span><span className="flex items-center gap-1"><span className={`h-1.5 w-1.5 rounded-full ${S.offline ? 'bg-red-400' : 'bg-emerald-400'}`} />{S.offline ? 'OFFLINE' : 'OPTIMAL'}</span>
       </div>
       <div className="px-4 pb-1 pt-4 text-[11px] uppercase tracking-[0.2em] text-slate-500">Observatory control</div>
-      <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-2">
+      <nav aria-label="Screens" className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-2">
         {NAV.map((n) => { const [s, c] = sub(n); return (
-          <NavLink key={n.path} to={n.path} className={({ isActive }) => `flex items-center gap-3 rounded-lg border-l-2 px-3 py-2.5 transition ${isActive ? 'border-violet-400 bg-violet-500/15 text-white' : 'border-transparent text-slate-300 hover:bg-white/5'}`}>
+          <NavLink key={n.path} to={n.path} onClick={onClose} className={({ isActive }) => `flex items-center gap-3 rounded-lg border-l-2 px-3 py-2.5 transition ${isActive ? 'border-violet-400 bg-violet-500/15 text-white' : 'border-transparent text-slate-300 hover:bg-white/5'}`}>
             <span className="w-5 font-mono text-xs text-slate-500">{n.id}</span>
             <span className="min-w-0 flex-1 leading-tight"><span className="block truncate text-[15px]">{n.title}</span><span className={`block text-[10px] uppercase tracking-wider ${c}`}>{s}</span></span>
             {right(n)}
