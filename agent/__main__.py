@@ -90,12 +90,17 @@ def main() -> int:
     print("📌 Key Factual Findings:")
     for f in report.key_findings:
         print(f"   ✓ {f}")
+    if report.memory_used:
+        print("\n🧠 H-MEM Investigation Memory (produced by the persistent-memory engine):")
+        for m in report.memory_notes:
+            print(f"   🧠 {m}")
     if report.risk_indicators:
         print("\n🚨 Risk Indicators:")
         for ind in report.risk_indicators:
             print(f"   ⚠️  {ind}")
     print("-" * 65)
-    print(f"📝 Executive Summary:\n   {report.executive_summary}")
+    summary_icon = "🤖" if report.summary_source == "llm" else "🧮"
+    print(f"📝 Executive Summary [{summary_icon} {report.summary_source}]:\n   {report.executive_summary}")
     print("-" * 65)
     print(f"🔗 Citations: {len(report.evidence_citations)} source envelopes")
     print(f"🕸️  Evidence Graph: {len(report.evidence_graph['nodes'])} nodes, {len(report.evidence_graph['relationships'])} edges")

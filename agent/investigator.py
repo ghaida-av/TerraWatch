@@ -15,6 +15,7 @@ from agent.models import (
     RiskComponents,
 )
 from agent.reasoner import compute_confidence, generate_synthesis
+from agent import memory as investigation_memory
 
 
 def investigate(
@@ -22,14 +23,17 @@ def investigate(
     question: str = "What environmental risks exist?",
     sources: Optional[List[str]] = None,
     country_hint: str = "",
+    memory: bool = True,
 ) -> InvestigationReport:
     """End-to-end synchronous investigation workflow:
 
     1. Geocodes location
-    2. Collects multi-source normalized evidence (in parallel)
-    3. Runs deterministic spatial/wind/temporal correlation in geo_analysis
-    4. Evaluates evidence confidence and synthesizes grounded report
-    5. Returns structured InvestigationReport
+    2. Recalls H-MEM persistent investigation memory for this target (agent/memory.py)
+    3. Collects multi-source normalized evidence (in parallel)
+    4. Runs deterministic spatial/wind/temporal correlation in geo_analysis
+    5. Evaluates evidence confidence and synthesizes grounded report
+    6. Persists the report back into H-MEM for future investigations
+    Returns structured InvestigationReport
     """
     # 1. Geocode location
     geo_evidence = geocode(location, country_hint)
@@ -45,14 +49,20 @@ def investigate(
 
     target_loc = InvestigationLocation(name=resolved_name, lat=lat, lon=lon)
 
-    # 2. Gather Evidence
+    # 2. H-MEM recall: deterministic memory facts from prior investigations of this target
+    memory_lines: List[str] = (
+        investigation_memory.recall(resolved_name, lat, lon) if (memory and location and geo_evidence.status == "ok") else []
+    )
+    memory_used = bool(memory_lines)
+
+    # 3. Gather Evidence
     sources_to_query = sources or ["weather", "air_quality", "fire"]
     evidence_items = collect_evidence(lat, lon, sources=sources_to_query)
 
     # Include geocode evidence for full citation traceability
     all_evidence = [geo_evidence] + evidence_items
 
-    # 3. Deterministic Geo & Risk Analysis
+    # 4. Deterministic Geo & Risk Analysis
     analysis = analyze_evidence(
         all_evidence,
         target_name=resolved_name,
@@ -60,9 +70,9 @@ def investigate(
         target_lon=lon,
     )
 
-    # 4. Reasoner Synthesis & Confidence Assessment
+    # 5. Reasoner Synthesis & Confidence Assessment
     confidence = compute_confidence(evidence_items)
-    synthesis = generate_synthesis(question, analysis, evidence_items)
+    synthesis = generate_synthesis(question, analysis, evidence_items, memory_lines=memory_lines)
 
     comps = analysis["components"]
     risk_comps = RiskComponents(
@@ -72,7 +82,7 @@ def investigate(
         temporal_correlation=comps["temporal_correlation"],
     )
 
-    return InvestigationReport(
+    report = InvestigationReport(
         investigation_id=f"inv_{uuid.uuid4().hex[:10]}",
         target=target_loc,
         question=question,
@@ -90,7 +100,13 @@ def investigate(
         summary_source=synthesis["summary_source"],
         guardrail_notes=synthesis["guardrail_notes"],
         data_gaps=synthesis["data_gaps"],
+        memory_used=memory_used,
+        memory_notes=memory_lines,
     )
+
+    # 6. H-MEM store: future investigations of this target will recall today's facts
+    investigation_memory.remember(report)
+    return report
 
 
 async def investigate_stream(
@@ -98,6 +114,7 @@ async def investigate_stream(
     question: str = "What environmental risks exist?",
     sources: Optional[List[str]] = None,
     country_hint: str = "",
+    memory: bool = True,
 ) -> AsyncGenerator[Dict[str, Any], None]:
     """Asynchronous generator yielding stage-by-stage events during investigation.
 
@@ -138,6 +155,19 @@ async def investigate_stream(
         "target": target_loc.model_dump(),
         "investigation_id": investigation_id,
     }
+
+    # H-MEM recall (deterministic, offline): prior-investigation facts for this target
+    memory_lines: List[str] = (
+        investigation_memory.recall(resolved_name, lat, lon) if (memory and geo_evidence.status == "ok") else []
+    )
+    if memory_lines:
+        yield {
+            "event": "stage",
+            "stage": "memory_recalled",
+            "message": f"H-MEM recalled {len(memory_lines)} fact(s) from prior investigation(s) of {resolved_name}",
+            "memory_notes": memory_lines,
+            "investigation_id": investigation_id,
+        }
 
     # Stage 2: Collecting Evidence
     sources_to_query = sources or ["weather", "air_quality", "fire"]
@@ -207,10 +237,8 @@ async def investigate_stream(
     confidence = compute_confidence(evidence_items)
     synthesis = await loop.run_in_executor(
         None,
-        generate_synthesis,
-        question,
-        analysis,
-        evidence_items,
+        functools.partial(generate_synthesis, question, analysis, evidence_items,
+                          memory_lines=memory_lines),
     )
 
     comps = analysis["components"]
@@ -239,7 +267,13 @@ async def investigate_stream(
         summary_source=synthesis["summary_source"],
         guardrail_notes=synthesis["guardrail_notes"],
         data_gaps=synthesis["data_gaps"],
+        memory_used=bool(memory_lines),
+        memory_notes=memory_lines,
     )
+
+    # H-MEM store: future investigations of this target will recall today's facts
+    if memory:
+        await loop.run_in_executor(None, functools.partial(investigation_memory.remember, report))
 
     # Stage 5: Completed
     yield {

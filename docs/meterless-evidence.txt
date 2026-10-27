@@ -1,0 +1,16 @@
+TerraWatch — Meterless Build/Power verification evidence (generated 2026-10-27)
+===============================================================================
+Commands:
+  .venv/bin/python smoke_test.py                      -> 3x PASS (Data / H-MEM / Power)
+  .venv/bin/pytest -q                                 -> 105 passed, 3 xfailed (offline)
+  TERRAWATCH_MODE=mock GROQ_API_KEY= .venv/bin/python -m agent "Cairo"   (x2 sessions)
+
+Session 1 (no memory yet):
+  Executive Summary [llm]  <- written through Meterless Nightshift (Nemotron lane)
+
+Session 2 (new process; H-MEM recall of session 1 facts):
+  Key finding: "memory: investigation inv_fc26740868 on 2026-10-27 for Cairo (mock) rated CRITICAL (score 0.75)."
+  H-MEM Investigation Memory block printed; summary again served via Nightshift (llm).
+
+Nightshift runtime: http://127.0.0.1:8088/v1  (models known: 19)
+Model lane: nvidia/nemotron-3.5-bolt-e4b (NVIDIA Nemotron via Nightshift Providers tab)

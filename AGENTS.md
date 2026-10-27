@@ -194,3 +194,20 @@ TERRAWATCH_MODE=mock .venv/bin/python -m agent "Cairo" --json | jq .
 - Removed old `apps/web` (static HTML). New React frontend lives in `frontend/`.
 - Added `GET /api/monitor/events` (`data/adapters/usgs/global_feed.py`, `apps/api/routes/monitor.py`) for the Earth Monitor map.
 - Tests: 63 passing.
+
+### 2026-10-27 — Meterless Power + H-MEM Build integration (hackathon compliance)
+- **Agent**: opencode (GLM) — audit against `docs/Open Agent Hackathon 2026 Participant Setup Guide 211026.md`, then closed both submission blockers.
+- **Power (Meterless Nightshift as primary AI provider)**:
+  - New `agent/llm.py`: OpenAI-compatible Nightshift Runtime client (`Authorization: Bearer`, `meterless-app: terrawatch`, `meterless-scope: user`, `GET /v1/models`, `POST /v1/chat/completions`), `test_connection()`, dependency-free `.env` loader, and direct-NVIDIA fallback route.
+  - `agent/reasoner.py`: provider chain = Nightshift → Groq → deterministic (summary never breaks an investigation); guardrails unchanged.
+  - `agent/__init__.py` loads project `.env` so README-run commands pick up provider settings without exports.
+- **Build (H-MEM engine)**:
+  - New `agent/memory.py` (Meterless Engine: H-MEM, persistent memory & retrieval): `remember(report)` / `recall(name, lat, lon)` (name or ≤50 km haversine match, FIFO cap 10/location), SQLite table `investigation_memory` (per-location fact sheets), opt-out `TERRAWATCH_MEMORY=0` / `TERRAWATCH_MEMORY_DB` override.
+  - `agent/investigator.py`: both `investigate()` and `investigate_stream()` recall memory after geocoding and store reports after completion (`memory_recalled` SSE stage added); `agent/models.py` gained `memory_used` / `memory_notes`; `agent/__main__.py` prints an H-MEM memory block and `Executive Summary [llm|deterministic]` provenance.
+  - Memory facts are deterministic lines in `key_findings` and flow into the guardrail allow-list (`build_allowed_numbers`) plus the LLM prompt (labelled as history).
+- **Verification**:
+  - New `smoke_test.py` (guide's "Verify your setup" Check 3, adapted): Data pipeline + H-MEM round-trip + Nemotron-via-Nightshift — all PASS with a live Nightshift.
+  - New tests `tests/test_llm.py` (9) and `tests/test_memory.py` (7), all offline (`conftest.py` now strips provider creds and gives H-MEM a tmp DB).
+  - Demo evidence: `docs/meterless-evidence.txt` (two CLI sessions: session 2 recalls session 1 facts; summaries served by `nvidia/nemotron-3.5-bolt-e4b` through Nightshift).
+- **Config/docs**: added root `.env.example`; README documents provider settings + engine feature.
+- **Tests: 105 passed, 3 xfailed in 0.68s** (was 89+3). Backend verified live: `POST /api/investigations` and SSE `/api/investigations/stream` both run the new provider + memory paths.

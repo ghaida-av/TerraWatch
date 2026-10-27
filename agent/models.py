@@ -38,3 +38,6 @@ class InvestigationReport(BaseModel):
     summary_source: str = "deterministic"
     guardrail_notes: List[str] = Field(default_factory=list)
     data_gaps: List[str] = Field(default_factory=list)  # e.g. ["fire:error", "air_quality:no_data"]
+    # H-MEM persistent investigation memory (agent/memory.py)
+    memory_used: bool = False  # True when prior-investigation memory was recalled for this target
+    memory_notes: List[str] = Field(default_factory=list)  # the deterministic memory fact lines used
